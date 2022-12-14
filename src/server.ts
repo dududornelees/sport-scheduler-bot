@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+import * as dotenv from "dotenv";
 import qrcode from "qrcode-terminal";
 import { Client } from "whatsapp-web.js";
 import { Messages } from "./messages";
