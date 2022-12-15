@@ -1,5 +1,5 @@
 import { db } from "../../services";
-import { collection, query, getDocs, where, orderBy, limit } from "firebase/firestore";
+import { collection, query, getDocs, where, orderBy, addDoc } from "firebase/firestore";
 import * as T from "./types";
 
 export const SportService = {
@@ -33,5 +33,12 @@ export const SportService = {
         querySnapshot.forEach((doc) => scheduledDates.push({ id: doc.id, date: doc.data().date }));
 
         return scheduledDates;
+    },
+
+    async scheduleSport({ sportId, selectedHour }: T.ScheduleDate) {
+        await addDoc(collection(db, "scheduledDates"), {
+            date: selectedHour,
+            sport: sportId
+        });
     }
 };

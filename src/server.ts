@@ -1,11 +1,11 @@
 import * as dotenv from "dotenv";
 import qrcode from "qrcode-terminal";
-import { Client } from "whatsapp-web.js";
+import { Client, LocalAuth } from "whatsapp-web.js";
 import { Messages } from "./messages";
 
 dotenv.config();
 
-const client = new Client({});
+const client = new Client({ authStrategy: new LocalAuth() });
 
 client.on("qr", (qr) => {
     qrcode.generate(qr, { small: true });

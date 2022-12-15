@@ -1,10 +1,13 @@
 import { Client, Buttons } from "whatsapp-web.js";
 import { SportService } from "./services";
-import { isToday, unifyHours } from "./helpers";
+import { isToday, unifyHours, stringToDate } from "./helpers";
 
 export const Messages = (client: Client) => {
     let name = "";
+    let selectedSportId = "";
     let alreadyWelcome = false;
+    let alreadySentFreeHours = false;
+    let alreadyMarked = false;
 
     client.on("message", async (message) => {
         const sports = await SportService.getSports();
@@ -53,10 +56,26 @@ export const Messages = (client: Client) => {
 
             client.sendMessage(
                 message.from,
-                `Nós temos os seguintes horários disponíveis:\n\n${unifyHours(
+                `Hoje, nós temos os seguintes horários disponíveis:\n\n${unifyHours(
                     freeTimeWithoutScheduled
                 )}\n\nDeseja marcar para qual horário?`
             );
+
+            alreadySentFreeHours = true;
+            selectedSportId = message.selectedButtonId;
+            return;
+        }
+
+        if (alreadySentFreeHours && !alreadyMarked && message.body !== null) {
+            await SportService.scheduleSport({ sportId: selectedSportId, selectedHour: stringToDate(message.body) });
+
+            client.sendMessage(
+                message.from,
+                "Horário agendado! Vamos comunicar um atendente e iremos confirmar os dados."
+            );
+
+            alreadyMarked = true;
+            return;
         }
     });
 };
